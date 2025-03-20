@@ -126,7 +126,7 @@ jobs:
         run: echo "image_tag=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
   
       - name: Debug image tag
-        run: echo "Image tag: sha-${{ steps.set_output.outputs.image_tag }}"
+        run: echo "Image_tag=sha-${{ steps.set_output.outputs.image_tag }}"
   
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
