@@ -120,11 +120,17 @@ jobs:
           tags: latest  # ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           load: true
+      - name: Set image tag output
+        id: set_output
+        run: echo "image_tag=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
       
+      - name: Debug image tag
+        run: echo "Image_tag=sha-${{ steps.set_output.outputs.image_tag }}"
+        
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest  #sha-${{ steps.set_output.outputs.image_tag }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:sha-${{ steps.set_output.outputs.image_tag }}
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -139,9 +145,9 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
       
-      - name: Set image tag output
-        id: set_output
-        run: echo "image_tag=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+      # - name: Set image tag output
+      #   id: set_output
+      #   run: echo "image_tag=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
 
   update-k8s:
     name: Update Kubernetes Deployment
